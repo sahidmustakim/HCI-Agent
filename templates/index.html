@@ -1,30 +1,108 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>HCI Paper Analyzer</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HCI Paper Analyzer - Transform Research Papers into Insights</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-<div class="container">
-    <h2>📑 Upload Research Paper (PDF)</h2>
-    {% if error %}
-        <p class="error">{{ error }}</p>
-    {% endif %}
-    <form method="post" enctype="multipart/form-data">
-        <label>Paper Title:</label>
-        <input type="text" name="title" class="input"><br>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-brain"></i>
+                <h1>HCI Paper Analyzer</h1>
+            </div>
+            <p class="tagline">Transform dense research papers into clear, structured insights using AI</p>
+        </div>
+    </header>
 
-        <label>Authors / Venue / Year:</label>
-        <input type="text" name="authors" class="input"><br>
+    <main class="main-content">
+        <div class="container">
+            <div class="upload-container">
+                <div class="upload-card">
+                    <h2><i class="fas fa-file-upload"></i> Upload Research Paper</h2>
+                    <p class="instructions">Get a structured analysis of HCI research papers in seconds</p>
+                    
+                    {% if error %}
+                        <div class="alert alert-error">
+                            <i class="fas fa-exclamation-circle"></i> {{ error | safe }}
+                        </div>
+                    {% endif %}
+                    
+                    <form method="post" enctype="multipart/form-data" id="upload-form">
+                        <div class="form-group">
+                            <label for="title">Paper Title <span class="required">*</span></label>
+                            <input type="text" id="title" name="title" class="form-control" required 
+                                   placeholder="Enter paper title">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="authors">Authors / Venue / Year</label>
+                            <input type="text" id="authors" name="authors" class="form-control"
+                                   placeholder="e.g., Smith et al., CHI 2023">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="pdf_file">PDF Document <span class="required">*</span></label>
+                            <div class="file-upload">
+                                <input type="file" id="pdf_file" name="pdf_file" accept=".pdf" required>
+                                <label for="pdf_file" class="file-label">
+                                    <i class="fas fa-file-pdf"></i> Choose PDF file
+                                </label>
+                                <span class="file-info">Maximum size: 20MB</span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="notes">Notes / Audience Context</label>
+                            <textarea id="notes" name="notes" class="form-control" rows="3"
+                                      placeholder="e.g., I'm a UX designer looking for practical takeaways"></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn-primary btn-large" id="analyze-btn">
+                            <i class="fas fa-microscope"></i> Analyze Paper
+                        </button>
+                        
+                        <div class="info-box">
+                            <i class="fas fa-info-circle"></i>
+                            <p>Your paper is processed locally and never stored. API keys are kept secure.</p>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="features">
+                    <h3>Why Use This Tool?</h3>
+                    <ul>
+                        <li><i class="fas fa-check-circle"></i> Get structured insights in 12 key areas</li>
+                        <li><i class="fas fa-check-circle"></i> Identify research gaps and limitations</li>
+                        <li><i class="fas fa-check-circle"></i> Save hours of reading dense academic papers</li>
+                        <li><i class="fas fa-check-circle"></i> Perfect for students, researchers, and practitioners</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <footer class="footer">
+        <div class="container">
+            <p>© 2025 SHM | Built with ❤️ for the HCI community</p>
+        </div>
+    </footer>
 
-        <label>Upload PDF (mandatory):</label>
-        <input type="file" name="pdf_file" accept=".pdf" required><br>
+    <div id="loading-overlay" style="display: none;">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <h3>Processing your paper...</h3>
+            <p>This may take 15-30 seconds depending on paper length</p>
+        </div>
+    </div>
 
-        <label>Notes / Audience:</label>
-        <textarea name="notes" rows="3" class="textarea"></textarea><br>
-
-        <button type="submit" class="btn">Analyze</button>
-    </form>
-</div>
+    <script>
+        document.getElementById('upload-form').addEventListener('submit', function() {
+            document.getElementById('loading-overlay').style.display = 'flex';
+        });
+    </script>
 </body>
 </html>

@@ -1,54 +1,127 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Paper Analysis Result</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analysis: {{ title }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-<div class="container">
-    <h2>📝 Paper Analysis Result</h2>
-    <button onclick="downloadPDF()" class="btn">📄 Download PDF</button>
-
-    <div class="cards-container">
-        {% for section in sections %}
-        <div class="card" onclick="openModal('{{ section }}')">
-            <h3>{{ section }}</h3>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-brain"></i>
+                <h1>HCI Paper Analyzer</h1>
+            </div>
+            <p class="tagline">Clear insights from complex research</p>
         </div>
-        {% endfor %}
-    </div>
+    </header>
 
+    <main class="main-content">
+        <div class="container">
+            <div class="results-header">
+                <div>
+                    <h1>{{ title }}</h1>
+                    {% if authors %}<p class="authors">{{ authors }}</p>{% endif %}
+                </div>
+                <button onclick="downloadPDF()" class="btn-primary">
+                    <i class="fas fa-download"></i> Download PDF
+                </button>
+            </div>
+            
+            <div class="analysis-intro">
+                <p>This structured analysis breaks down the paper into key HCI research areas. 
+                   Click any section to explore detailed insights.</p>
+            </div>
+
+            <div class="cards-container">
+                {% for section in sections %}
+                <div class="card" onclick="openModal('{{ section }}')">
+                    <div class="card-icon">
+                        {% if loop.index0 == 0 %}<i class="fas fa-clock"></i>
+                        {% elif loop.index0 == 1 %}<i class="fas fa-lightbulb"></i>
+                        {% elif loop.index0 == 2 %}<i class="fas fa-walking"></i>
+                        {% elif loop.index0 == 3 %}<i class="fas fa-database"></i>
+                        {% elif loop.index0 == 4 %}<i class="fas fa-mobile-alt"></i>
+                        {% elif loop.index0 == 5 %}<i class="fas fa-exclamation-triangle"></i>
+                        {% elif loop.index0 == 6 %}<i class="fas fa-flask"></i>
+                        {% elif loop.index0 == 7 %}<i class="fas fa-chart-line"></i>
+                        {% elif loop.index0 == 8 %}<i class="fas fa-puzzle-piece"></i>
+                        {% elif loop.index0 == 9 %}<i class="fas fa-road"></i>
+                        {% elif loop.index0 == 10 %}<i class="fas fa-book"></i>
+                        {% endif %}
+                    </div>
+                    <h3>{{ section }}</h3>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </main>
+    
     <!-- Modal -->
     <div id="modal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
-            <h2 id="modal-title"></h2>
-            <p id="modal-text"></p>
+            <div class="modal-header">
+                <h2 id="modal-title"></h2>
+                <div class="modal-actions">
+                    <button onclick="copyToClipboard()" class="btn-small">
+                        <i class="fas fa-copy"></i> Copy
+                    </button>
+                </div>
+            </div>
+            <div id="modal-text" class="modal-body"></div>
         </div>
     </div>
-</div>
 
-<script>
-    const results = {{ results|tojson }};
+    <footer class="footer">
+        <div class="container">
+            <p>© 2025 SHM | Your insights into HCI research</p>
+        </div>
+    </footer>
 
-    function openModal(section){
-        document.getElementById("modal-title").innerText = section;
-        document.getElementById("modal-text").innerText = results[section];
-        document.getElementById("modal").style.display = "block";
-    }
-
-    function closeModal(){
-        document.getElementById("modal").style.display = "none";
-    }
-
-    window.onclick = function(event){
-        let modal = document.getElementById("modal");
-        if(event.target == modal) closeModal();
-    }
-
-    function downloadPDF(){
-        let url = "/download_pdf/{{ title }}";
-        window.location.href = url;
-    }
-</script>
+    <script>
+        const results = {{ results|tojson }};
+        const title = "{{ title }}";
+        
+        function openModal(section) {
+            document.getElementById("modal-title").innerText = section;
+            document.getElementById("modal-text").innerHTML = results[section];
+            document.getElementById("modal").style.display = "block";
+            document.body.style.overflow = "hidden"; // Prevent background scrolling
+        }
+        
+        function closeModal() {
+            document.getElementById("modal").style.display = "none";
+            document.body.style.overflow = "auto"; // Re-enable scrolling
+        }
+        
+        function copyToClipboard() {
+            const text = document.getElementById("modal-text").innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                alert("Copied to clipboard!");
+            });
+        }
+        
+        function downloadPDF() {
+            window.location.href = `/download_pdf/${encodeURIComponent(title)}`;
+        }
+        
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById("modal");
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+        
+        // Handle keyboard events
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeModal();
+            }
+        });
+    </script>
 </body>
 </html>
